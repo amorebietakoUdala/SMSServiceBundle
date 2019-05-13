@@ -1,0 +1,23 @@
+{
+    "name" : "amorebietakoudala/smsservice-bundle",
+    "description" : "A bundle to make send SMS send messages through dynaSMS API",
+    "type" : "symfony-bundle",
+    "authors" : [{
+        "name" : "Amorebietako Udala",
+        "email" : "informatika@amorebieta.eus"
+    }],
+    "keywords" : [
+        "Send SMS Dinahosting DinaSMS"
+    ],
+    "license" : [
+        "MIT"
+    ],
+    "require" : {
+		"php": "^7.1.3"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "SMSService\\Bundle\\" : ""
+        }
+    }
+}
