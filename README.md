@@ -8,9 +8,13 @@ composer require amorebietakoudala/smsservice-bundle
 Edit .env.local file and add or edit the following parameters.
 
 SMS_USERNAME=sms_username
+
 SMS_PASSWORD=sms_password
+
 SMS_ACCOUNT=sms_account
+
 SMS_TEST=true
+
 
 If SMS_TEST is set to true, says that it test environment and it won't send message to the API. Set it to true in production environment.
 
