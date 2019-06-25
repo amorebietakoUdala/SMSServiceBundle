@@ -1,6 +1,6 @@
 {
     "name" : "amorebietakoudala/smsservice-bundle",
-    "description" : "A bundle to make send SMS send messages through dynaSMS API",
+    "description" : "A bundle to make send SMS send messages through dinaSMS API",
     "type" : "symfony-bundle",
     "authors" : [{
         "name" : "Amorebietako Udala",
