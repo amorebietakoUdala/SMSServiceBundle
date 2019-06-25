@@ -8,12 +8,13 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
-    SMSService\Bundle\Controller\SmsSender:
-        class: SMSService\Bundle\Controller\SmsSender
+    AmorebietakoUdala\SMSServiceBundle\Controller\SmsApi:
+        class: AmorebietakoUdala\SMSServiceBundle\Controller\SmsApi
         public: true
-        arguments: ['%username%','%password%','%account%']
+        autowire: true
+        arguments: ['%username%','%password%','%account%','%test%']
         
-    SMSService\Bundle\Controller\DefaultController:
+    AmorebietakoUdala\SMSServiceBundle\Controller\DefaultController:
         tags: ['controller.service_arguments']
         public: true
-        arguments: ['@SMSService\Bundle\Controller\SmsSender']
+        arguments: ['@AmorebietakoUdala\SMSServiceBundle\Controller\SmsApi']

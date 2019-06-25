@@ -1,16 +1,16 @@
 <?php
 
-namespace SMSService\Bundle\Controller;
+namespace AmorebietakoUdala\SMSServiceBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
     /**
      * @Route("/", name="sms_getCredit", methods={"GET"})
      */
-    public function indexAction(SmsSender $sms)
+    public function indexAction(SmsApi $sms)
     {
         $credit = $sms->getCredit();
 
