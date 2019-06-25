@@ -8,8 +8,11 @@ composer require amorebietakoudala/smsservice-bundle
 Edit .env.local file and add or edit the following parameters.
 
 SMS_USERNAME=sms_username
+
 SMS_PASSWORD=sms_password
+
 SMS_ACCOUNT=sms_account
+
 SMS_TEST=true
 
 
