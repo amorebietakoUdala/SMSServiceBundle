@@ -154,7 +154,7 @@ class SmsApi
         }
         $response = json_decode($response);
         if (1000 != $response->responseCode) {
-            throw new Exception(json_encode($response->errors));
+            throw new \Exception(json_encode($response->errors));
         }
 
         return $response;
