@@ -43,7 +43,7 @@ class SmsApi
      *
      * @return int : Número de créditos (mensajes) disponibles
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function getCredit()
     {
@@ -60,7 +60,7 @@ class SmsApi
      * @param $message : Texto del mensaje para enviar
      * @param null $when : Fecha programada para el envio
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function sendMessage(array $numbers, $message, $when = null)
     {
@@ -105,7 +105,7 @@ class SmsApi
      *
      * @return bool|mixed|string : El resultado de la petición
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function send($params)
     {
@@ -116,7 +116,7 @@ class SmsApi
 
         $handle = curl_init(self::_DINAHOSTING_URL_SEND);
         if (false === $handle) { // error starting curl
-            throw new Exception('0 - Couldn\'t start curl');
+            throw new \Exception('0 - Couldn\'t start curl');
         } else {
             curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
@@ -147,7 +147,7 @@ class SmsApi
             if ($response) {
                 $response = substr($response, strpos($response, "\r\n\r\n") + 4); // remove http headers
             } else { // http response code != 200
-                throw new Exception(curl_errno($handle).' - '.curl_error($handle));
+                throw new \Exception(curl_errno($handle).' - '.curl_error($handle));
             }
 
             curl_close($handle);
