@@ -69,7 +69,7 @@ class SmsApi
             'contents' => $message,
             'to' => $numbers,
             'from' => $this->account,
-            'command' => 'Sms_Send_Bulk_Limited_Unicode',
+            'command' => 'Sms_Send_Bulk_Long_Unicode',
         ];
         if (null !== $when) {
             $when = date_format($when, 'Y-m-d H:i:s');
@@ -81,7 +81,7 @@ class SmsApi
         if (!$this->test) {
             return $this->send($params);
         } else {
-            return json_decode('{"trId": "dh5d0363af7c2744.81726264","responseCode": 1000,"message": "Success.","data": true,"command": "Sms_Send_Bulk_Limited_Unicode"}');
+            return json_decode('{"trId": "dh5d0363af7c2744.81726264","responseCode": 1000,"message": "Success.","data": true,"command": "Sms_Send_Bulk_Long_Unicode"}');
         }
     }
 
