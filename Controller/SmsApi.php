@@ -69,7 +69,7 @@ class SmsApi
             'contents' => $message,
             'to' => $numbers,
             'from' => $this->account,
-            'command' => 'Sms_Send_Bulk_Long_Unicode',
+            'command' => 'Sms_Send_Bulk_Limited_Gsm7',
         ];
         if (null !== $when) {
             $when = date_format($when, 'Y-m-d H:i:s');
