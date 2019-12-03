@@ -13,7 +13,8 @@
         "MIT"
     ],
     "require" : {
-		"php": "^7.1.3"
+		"php": "^7.1.3",
+        "guzzlehttp/guzzle": "^6.4"
     },
     "autoload" : {
         "psr-4" : {

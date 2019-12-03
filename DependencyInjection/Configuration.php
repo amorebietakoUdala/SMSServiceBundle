@@ -20,11 +20,30 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('sms_service');
         $rootNode->children()
-            ->scalarNode('username')->isRequired()->end()
-            ->scalarNode('password')->isRequired()->end()
-            ->scalarNode('account')->isRequired()->end()
+            ->scalarNode('provider')->isRequired()->end()
             ->booleanNode('test')->isRequired()->end()
-            ;
+            ->arrayNode('providers')->isRequired()
+                ->children()
+                    ->arrayNode('dinahosting')
+                        ->children()
+                            ->scalarNode('username')->end()
+                            ->scalarNode('password')->end()
+                            ->scalarNode('account')->end()
+                        ->end()
+                    ->end()
+                    ->arrayNode('acumbamail')
+                        ->children()
+                            ->scalarNode('authToken')->isRequired()->end()
+                            ->scalarNode('sender')->isRequired()->end()
+                            ->scalarNode('version')->end()
+                            ->scalarNode('timeout')->end()
+                            ->scalarNode('countryCode')->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ->end()
+        ;
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.

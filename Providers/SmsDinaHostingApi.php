@@ -1,13 +1,15 @@
 <?php
 
-namespace AmorebietakoUdala\SMSServiceBundle\Controller;
+namespace AmorebietakoUdala\SMSServiceBundle\Providers;
+
+use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
 
 /**
  * Se encarga del envio de SMS usando la API de dinahosting.com.
  *
  * @version 1.0
  */
-class SmsApi
+class SmsDinaHostingApi implements SmsApiInterface
 {
     private const _DINAHOSTING_URL_SEND = 'https://dinahosting.com/special/api.php';
     /**
@@ -152,9 +154,9 @@ class SmsApi
 
             curl_close($handle);
         }
-        $response = json_decode($response);
-        if (1000 != $response->responseCode) {
-            throw new \Exception(json_encode($response->errors));
+        $response = json_decode($response, true);
+        if (1000 != $response['responseCode']) {
+            throw new \Exception(json_encode($response['errors']));
         }
 
         return $response;

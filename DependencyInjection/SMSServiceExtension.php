@@ -26,10 +26,21 @@ class SMSServiceExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $definition = $container->getDefinition('AmorebietakoUdala\SMSServiceBundle\Controller\SmsApi');
-        $definition->setArgument(0, $config['username']);
-        $definition->setArgument(1, $config['password']);
-        $definition->setArgument(2, $config['account']);
-        $definition->setArgument(3, $config['test']);
+        $dinaHostingDefinition = $container->getDefinition('AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi');
+        $dinaHostingDefinition->setArgument(0, $config['providers']['dinahosting']['username']);
+        $dinaHostingDefinition->setArgument(1, $config['providers']['dinahosting']['password']);
+        $dinaHostingDefinition->setArgument(2, $config['providers']['dinahosting']['account']);
+        $dinaHostingDefinition->setArgument(3, $config['test']);
+        $acumbamailDefinition = $container->getDefinition('AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi');
+        $acumbamailDefinition->setArgument(0, $config['providers']['acumbamail']['authToken']);
+        $acumbamailDefinition->setArgument(1, $config['test']);
+        $acumbamailDefinition->setArgument(2, $config['providers']['acumbamail']['sender']);
+        $acumbamailDefinition->setArgument(3, $config['providers']['acumbamail']['version']);
+        $acumbamailDefinition->setArgument(4, $config['providers']['acumbamail']['timeout']);
+        $acumbamailDefinition->setArgument(5, $config['providers']['acumbamail']['countryCode']);
+        $smsServiceDefinition = $container->getDefinition('AmorebietakoUdala\SMSServiceBundle\Services\SmsServiceApi');
+        $smsServiceDefinition->setArgument(0, $config['provider']);
+        $smsServiceDefinition->setArgument(1, $dinaHostingDefinition);
+        $smsServiceDefinition->setArgument(2, $acumbamailDefinition);
     }
 }
