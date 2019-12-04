@@ -129,7 +129,7 @@ class SmsDinaHostingApi implements SmsApiInterface
 
             curl_setopt($handle, CURLOPT_TIMEOUT, 60);
             curl_setopt($handle, CURLOPT_CONNECTTIMEOUT,
-                        4); // set higher if you get a "28 - SSL connection timeout" error
+                        8); // set higher if you get a "28 - SSL connection timeout" error
 
             curl_setopt($handle, CURLOPT_HEADER, true);
             curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);

@@ -19,18 +19,4 @@ class DefaultController extends AbstractController
             'credit' => $credit,
         ]);
     }
-
-    private function __getSMSService($smsProvider, SmsDinaHostingApi $dinahostingService, SmsAcumbamailApi $acumbamailService)
-    {
-        switch ($smsProvider) {
-            case 'Acumbamail':
-                $this->smsService = $acumbamailService;
-                break;
-            case 'Dinahosting':
-                $this->smsService = $dinahostingService;
-                break;
-        }
-
-        return $this->smsService;
-    }
 }

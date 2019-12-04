@@ -3,7 +3,6 @@
 namespace AmorebietakoUdala\SMSServiceBundle\Providers;
 
 use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
-use GuzzleHttp\Client;
 
 /**
  * Se encarga del envio de SMS usando la API de acumbamail.com.
@@ -44,17 +43,11 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     private $countryCode;
 
-    /**
-     * @var : Client
-     */
-    private $client;
-
     public function __construct($authToken = null, $test = false, $sender, $version = 1, $timeout = 5.0, $countryCode = '34')
     {
         $this->authToken = $authToken;
         $this->test = $test;
         $this->version = $version;
-        $this->client = new Client(['base_uri' => self::_ACUMBAMAIL_URL_SEND.'api/'.$this->version.'/']);
         $this->timeout = $timeout;
         $this->sender = substr(str_replace(' ', '_', $sender), 0, 10);
         $this->countryCode = $countryCode;
@@ -70,10 +63,9 @@ class SmsAcumbamailApi implements SmsApiInterface
     public function getCredit()
     {
         $operation = 'getCreditsSMS';
-        $response = $this->client->request('POST', $operation.'/?auth_token='.$this->authToken);
-        $json = json_decode($response->getBody()->getContents(), true);
+        $response = $this->send($operation);
 
-        return $json['Creditos'];
+        return $response['Creditos'];
     }
 
     /**
@@ -95,7 +87,6 @@ class SmsAcumbamailApi implements SmsApiInterface
 
         $params = [
             'messages' => $messagesJson,
-            'auth_token' => $this->authToken,
         ];
 
         if (!$this->test) {
@@ -103,14 +94,23 @@ class SmsAcumbamailApi implements SmsApiInterface
         } else {
             $response = json_decode('{"messages": [{"status": 0, "credits": 1, "id": 2889449}]}', true);
             $response['responseCode'] = '201';
-            $response['message'] = 'Test Success';
+            $response['message'] = 'Success';
         }
 
         return $response;
     }
 
-    public function getHistory($start = 0, $end = 100)
+    public function getHistory(\DateTime $start_date, \DateTime $end_date)
     {
+        // https://acumbamail.com/api/1/getSMSQuickSubscriberReport/?auth_token=QaVpMu9n5I9J2EYdIG5X&start_date=2019/11/14 08:00&end_date=2019/11/14 10:00
+        $operation = 'getSMSQuickSubscriberReport';
+        $params = [
+            'start_date' => $start_date->format('Y/m/d H:i'),
+            'end_date' => $end_date->format('Y/m/d H:i'),
+        ];
+        $response = $this->send($operation, $params);
+
+        return $response;
     }
 
     private function __formatTelephones(array $numbers)
@@ -157,13 +157,15 @@ class SmsAcumbamailApi implements SmsApiInterface
      *
      * @throws \Exception
      */
-    public function send($operation, $params)
+    public function send($operation, $params = null)
     {
         $query = '';
-        foreach ($params as $key => $value) {
-            $query = '&'.$key.'='.$value.$query;
+        if (null !== $params) {
+            foreach ($params as $key => $value) {
+                $query = '&'.$key.'='.$value.$query;
+            }
+            $query = substr($query, 1);
         }
-        $query = substr($query, 1);
         $http_status = null;
         $handle = curl_init(self::_ACUMBAMAIL_URL_SEND);
         if (false === $handle) { // error starting curl
@@ -171,7 +173,7 @@ class SmsAcumbamailApi implements SmsApiInterface
         } else {
             curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($handle, CURLOPT_URL, self::_ACUMBAMAIL_URL_SEND.'api/'.$this->version.'/'.$operation.'/?'.$query);
+            curl_setopt($handle, CURLOPT_URL, self::_ACUMBAMAIL_URL_SEND.'api/'.$this->version.'/'.$operation.'/?auth_token='.$this->authToken.'&'.$query);
 
             curl_setopt($handle, CURLOPT_TIMEOUT, 60);
             curl_setopt($handle, CURLOPT_CONNECTTIMEOUT,
@@ -196,12 +198,14 @@ class SmsAcumbamailApi implements SmsApiInterface
             curl_close($handle);
         }
 
-        if (201 != $http_status) {
+        if (201 != $http_status && 200 != $http_status) {
             throw new \Exception($response);
         }
         $response = json_decode($response, true);
-        $response['responseCode'] = $http_status;
-        $response['message'] = 'Success';
+        if ('sendSMS' === $operation) {
+            $response['responseCode'] = $http_status;
+            $response['message'] = 'Success';
+        }
 
         return $response;
     }

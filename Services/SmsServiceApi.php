@@ -42,8 +42,17 @@ class SmsServiceApi implements SmsApiInterface
         return $this->smsService->getCredit();
     }
 
-    public function getHistory($start = 0, $end = 100)
+    public function getHistory($start_date = null, $end_date = null)
     {
+        if (null === $start_date) {
+            // Since today at 00:00
+            $start_date = new \DateTime((new \DateTime())->format('Y-m-d'));
+        }
+        if (null === $end_date) {
+            $end_date = new \DateTime();
+        }
+
+        return $this->smsService->getHistory($start_date, $end_date);
     }
 
     public function sendMessage(array $numbers, $message, $when = null)

@@ -26,10 +26,4 @@ interface SmsApiInterface
      * @throws \Exception
      */
     public function sendMessage(array $numbers, $message, $when = null);
-
-    /**
-     * @param type $start : Número de inicio de los mensajes a obtener
-     * @param type $end   : Número de final de los mensajes a obtener
-     */
-    public function getHistory($start = 0, $end = 100);
 }
