@@ -12,7 +12,7 @@ services:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi
         public: true
         autowire: true
-        arguments: ['%username%','%password%','%account%','%test%']
+        arguments: ['%username%','%password%','%account%','%test%','%sender%']
         
     AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi

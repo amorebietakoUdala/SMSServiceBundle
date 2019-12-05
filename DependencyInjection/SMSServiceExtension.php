@@ -31,6 +31,7 @@ class SMSServiceExtension extends Extension
         $dinaHostingDefinition->setArgument(1, $config['providers']['dinahosting']['password']);
         $dinaHostingDefinition->setArgument(2, $config['providers']['dinahosting']['account']);
         $dinaHostingDefinition->setArgument(3, $config['test']);
+        $dinaHostingDefinition->setArgument(4, $config['providers']['dinahosting']['sender']);
         $acumbamailDefinition = $container->getDefinition('AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi');
         $acumbamailDefinition->setArgument(0, $config['providers']['acumbamail']['authToken']);
         $acumbamailDefinition->setArgument(1, $config['test']);

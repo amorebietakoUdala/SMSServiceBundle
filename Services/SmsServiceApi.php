@@ -33,6 +33,7 @@ class SmsServiceApi implements SmsApiInterface
                 $this->smsService = $smsDinaHostingApi;
                 break;
         }
+        $this->provider = $provider;
 
         return $this->smsService;
     }

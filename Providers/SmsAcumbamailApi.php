@@ -5,7 +5,7 @@ namespace AmorebietakoUdala\SMSServiceBundle\Providers;
 use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
 
 /**
- * Se encarga del envio de SMS usando la API de acumbamail.com.
+ * Connection API to dinahosting.com.
  *
  * @version 1.0
  */
@@ -14,36 +14,37 @@ class SmsAcumbamailApi implements SmsApiInterface
     private const _ACUMBAMAIL_URL_SEND = 'https://acumbamail.com/';
 
     /**
-     * @var : Token de acumbamail de tu usuario
+     * @var : Acumbamail user token
      */
     private $authToken;
 
     /**
-     * @var : Versión de API de acumbamail
+     * @var : Acumbamail API version
      */
     private $version;
 
     /**
-     * @var : Si se pone a true simula la respuesta correcta, pero no envía
+     * @var boolean: To Simulate the API response without making it set it to true
      */
     private $test;
 
     /**
-     * @var : Texto que aparece como enviante del SMS
+     * @var string: Text especifying the sender of SMS. Can't have spaces.
+     *              Only 11 characters maximum.
      */
     private $sender;
 
     /**
-     * @var : Timeout de conexión al API
+     * @var int: Maximum time in seconds that you allow the connection phase
      */
     private $timeout;
 
     /**
-     * @var : Código de país para los teléfonos
+     * @var string: Country code to add to the telephones when no starting with +
      */
     private $countryCode;
 
-    public function __construct($authToken = null, $test = false, $sender, $version = 1, $timeout = 5.0, $countryCode = '34')
+    public function __construct($authToken = null, $test = false, $sender, $version = 1, $timeout = 10, $countryCode = '34')
     {
         $this->authToken = $authToken;
         $this->test = $test;
@@ -54,9 +55,9 @@ class SmsAcumbamailApi implements SmsApiInterface
     }
 
     /**
-     * Devuelve el credito disponible.
+     * Returns the credit avaible.
      *
-     * @return int : Número de créditos (mensajes) disponibles
+     * @return int : Number of available credits (messages)
      *
      * @throws \Exception
      */
@@ -69,11 +70,11 @@ class SmsAcumbamailApi implements SmsApiInterface
     }
 
     /**
-     * Envia un mensaje a un numero.
+     * Send the message to the telephone numbers expecified.
      *
-     * @param array $numbers : Array con los números de teléfono destino
-     * @param $message : Texto del mensaje para enviar
-     * @param null $when : Fecha programada para el envio
+     * @param array $numbers : Array with the recipients telephone numbers
+     * @param $message : Message to be sent
+     * @param string $when : The date when the message has to be sended
      *
      * @throws \Exception
      */
@@ -100,6 +101,12 @@ class SmsAcumbamailApi implements SmsApiInterface
         return $response;
     }
 
+    /**
+     * Returns the history of the sended SMSs.
+     *
+     * @param int $start: Especifies the starting record
+     * @param int $end:   Especifies the ending record
+     */
     public function getHistory(\DateTime $start_date, \DateTime $end_date)
     {
         // https://acumbamail.com/api/1/getSMSQuickSubscriberReport/?auth_token=QaVpMu9n5I9J2EYdIG5X&start_date=2019/11/14 08:00&end_date=2019/11/14 10:00
@@ -113,6 +120,15 @@ class SmsAcumbamailApi implements SmsApiInterface
         return $response;
     }
 
+    /**
+     * Changes the telephones to international format.
+     *
+     * @param array $numbers : Array with the recipients telephone numbers
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
     private function __formatTelephones(array $numbers)
     {
         $formatedTelephones = [];
@@ -130,6 +146,16 @@ class SmsAcumbamailApi implements SmsApiInterface
         return $formatedTelephones;
     }
 
+    /**
+     * Creates the message format for API to work.
+     *
+     * @param array  $numbers : Array with the recipients telephone numbers
+     * @param string $message : The message to be sent
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
     private function __createMessages($numbers, $message)
     {
         $messages = [];
@@ -148,12 +174,11 @@ class SmsAcumbamailApi implements SmsApiInterface
     }
 
     /**
-     * Realiza la petición remota.
+     * Sends the request to the server.
      *
-     *  @param $operation : API operation to send
-     *  @param $params : Array asociativo con los nombres de los parametros y sus valores
+     * @param $params : Array asociativo con los nombres de los parametros y sus valores
      *
-     * @return bool|mixed|string : El resultado de la petición
+     * @return bool|mixed|string : The result of the request
      *
      * @throws \Exception
      */
@@ -177,7 +202,7 @@ class SmsAcumbamailApi implements SmsApiInterface
 
             curl_setopt($handle, CURLOPT_TIMEOUT, 60);
             curl_setopt($handle, CURLOPT_CONNECTTIMEOUT,
-                        10); // set higher if you get a "28 - SSL connection timeout" error
+                        $this->timeout); // set higher if you get a "28 - SSL connection timeout" error
 
             $curlversion = curl_version();
             curl_setopt($handle, CURLOPT_USERAGENT, 'PHP '.phpversion().' + Curl '.$curlversion['version']);

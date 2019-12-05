@@ -5,7 +5,7 @@ namespace AmorebietakoUdala\SMSServiceBundle\Providers;
 use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
 
 /**
- * Se encarga del envio de SMS usando la API de dinahosting.com.
+ * Connection API to dinahosting.com.
  *
  * @version 1.0
  */
@@ -13,37 +13,48 @@ class SmsDinaHostingApi implements SmsApiInterface
 {
     private const _DINAHOSTING_URL_SEND = 'https://dinahosting.com/special/api.php';
     /**
-     * @var
+     * @var String: Dinahosting username
      */
     private $username;
 
     /**
-     * @var
+     * @var String: Dinahosting password
      */
     private $password;
 
     /**
-     * @var
+     * @var String: Dinahosting account
      */
     private $account;
 
     /**
-     * @var
+     * @var boolean: To Simulate the API response without making it set it to true
      */
     private $test;
 
-    public function __construct($username = null, $password = null, $account = null, $test = false)
+    /**
+     * @var string: Text especifying the sender of SMS. Can't have spaces.
+     *              Only 11 characters maximum.
+     */
+    private $sender;
+
+    public function __construct($username = null, $password = null, $account = null, $test = false, $sender = null)
     {
         $this->username = $username;
         $this->password = $password;
         $this->account = $account;
         $this->test = $test;
+        if (null !== $sender) {
+            $this->sender = substr(str_replace(' ', '_', $sender), 0, 10);
+        } else {
+            $this->sender = $this->account;
+        }
     }
 
     /**
-     * Devuelve el credito disponible.
+     * Returns the credit avaible.
      *
-     * @return int : Número de créditos (mensajes) disponibles
+     * @return int : Number of available credits (messages)
      *
      * @throws \Exception
      */
@@ -52,15 +63,15 @@ class SmsDinaHostingApi implements SmsApiInterface
         $params = ['account' => $this->account, 'command' => 'Sms_GetCredit'];
         $response = $this->send($params);
 
-        return intval($response->data);
+        return intval($response['data']);
     }
 
     /**
-     * Envia un mensaje a un numero.
+     * Send the message to the telephone numbers expecified.
      *
-     * @param array $numbers : Array con los números de teléfono destino
-     * @param $message : Texto del mensaje para enviar
-     * @param null $when : Fecha programada para el envio
+     * @param array $numbers : Array with the recipients telephone numbers
+     * @param $message : Message to be sent
+     * @param string $when : The date when the message has to be sended
      *
      * @throws \Exception
      */
@@ -70,7 +81,7 @@ class SmsDinaHostingApi implements SmsApiInterface
             'account' => $this->account,
             'contents' => $message,
             'to' => $numbers,
-            'from' => $this->account,
+            'from' => $this->sender,
             'command' => 'Sms_Send_Bulk_Limited_Gsm7',
         ];
         if (null !== $when) {
@@ -83,10 +94,16 @@ class SmsDinaHostingApi implements SmsApiInterface
         if (!$this->test) {
             return $this->send($params);
         } else {
-            return json_decode('{"trId": "dh5d0363af7c2744.81726264","responseCode": 1000,"message": "Success.","data": true,"command": "Sms_Send_Bulk_Long_Unicode"}');
+            return json_decode('{"trId": "dh5d0363af7c2744.81726264","responseCode": 1000,"message": "Success.","data": true,"command": "Sms_Send_Bulk_Long_Unicode"}', true);
         }
     }
 
+    /**
+     * Returns the history of the sended SMSs.
+     *
+     * @param int $start: Especifies the starting record
+     * @param int $end:   Especifies the ending record
+     */
     public function getHistory($start = 0, $end = 100)
     {
         //'https://dinahosting.com/special/api.php?AUTH_USER=username&AUTH_PWD=password&account=account&responseType=Json&start=0&end=100&command=Sms_History_GetSent'
@@ -101,11 +118,11 @@ class SmsDinaHostingApi implements SmsApiInterface
     }
 
     /**
-     * Realiza la petición remota.
+     * Sends the request to the server.
      *
      * @param $params : Array asociativo con los nombres de los parametros y sus valores
      *
-     * @return bool|mixed|string : El resultado de la petición
+     * @return bool|mixed|string : The result of the request
      *
      * @throws \Exception
      */
