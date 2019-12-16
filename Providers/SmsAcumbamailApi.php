@@ -184,12 +184,6 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     public function send($operation, $params = null)
     {
-//        if (null !== $params) {
-//            foreach ($params as $key => $value) {
-//                $body = ':'.$key.'='.$value.$body;
-//            }
-//            $query = substr($query, 1);
-//        }
         $params['auth_token'] = $this->authToken;
         $http_status = null;
         $handle = curl_init(self::_ACUMBAMAIL_URL_SEND);
