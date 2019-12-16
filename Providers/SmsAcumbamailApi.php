@@ -109,7 +109,7 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     public function getHistory(\DateTime $start_date, \DateTime $end_date)
     {
-        // https://acumbamail.com/api/1/getSMSQuickSubscriberReport/?auth_token=QaVpMu9n5I9J2EYdIG5X&start_date=2019/11/14 08:00&end_date=2019/11/14 10:00
+        // https://acumbamail.com/api/1/getSMSQuickSubscriberReport/?auth_token=<authToken>&start_date=2019/11/14 08:00&end_date=2019/11/14 10:00
         $operation = 'getSMSQuickSubscriberReport';
         $params = [
             'start_date' => $start_date->format('Y/m/d H:i'),
@@ -184,13 +184,13 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     public function send($operation, $params = null)
     {
-        $query = '';
-        if (null !== $params) {
-            foreach ($params as $key => $value) {
-                $query = '&'.$key.'='.$value.$query;
-            }
-            $query = substr($query, 1);
-        }
+//        if (null !== $params) {
+//            foreach ($params as $key => $value) {
+//                $body = ':'.$key.'='.$value.$body;
+//            }
+//            $query = substr($query, 1);
+//        }
+        $params['auth_token'] = $this->authToken;
         $http_status = null;
         $handle = curl_init(self::_ACUMBAMAIL_URL_SEND);
         if (false === $handle) { // error starting curl
@@ -198,7 +198,8 @@ class SmsAcumbamailApi implements SmsApiInterface
         } else {
             curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($handle, CURLOPT_URL, self::_ACUMBAMAIL_URL_SEND.'api/'.$this->version.'/'.$operation.'/?auth_token='.$this->authToken.'&'.$query);
+            curl_setopt($handle, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
+            curl_setopt($handle, CURLOPT_URL, self::_ACUMBAMAIL_URL_SEND.'api/'.$this->version.'/'.$operation.'/');
 
             curl_setopt($handle, CURLOPT_TIMEOUT, 60);
             curl_setopt($handle, CURLOPT_CONNECTTIMEOUT,
@@ -212,6 +213,7 @@ class SmsAcumbamailApi implements SmsApiInterface
                         false); // set false if you get a "60 - SSL certificate problem" error
 
             curl_setopt($handle, CURLOPT_POST, true);
+            curl_setopt($handle, CURLOPT_POSTFIELDS, $params);
 
             $response = curl_exec($handle);
 
