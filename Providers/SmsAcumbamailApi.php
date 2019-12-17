@@ -211,23 +211,19 @@ class SmsAcumbamailApi implements SmsApiInterface
 
             $response = curl_exec($handle);
 
-            if (!$response) {
-                throw new \Exception(curl_errno($handle).' - '.curl_error($handle));
-            }
-
             $http_status = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            if (201 != $http_status && 200 != $http_status) {
+                throw new \Exception(curl_errno($handle).' - '.curl_error($handle).'Response:'.$response);
+            } else {
+                $response = json_decode($response, true);
+                if ('sendSMS' === $operation) {
+                    $response['responseCode'] = $http_status;
+                    $response['message'] = 'Success';
+                }
+
+                return $response;
+            }
             curl_close($handle);
         }
-
-        if (201 != $http_status && 200 != $http_status) {
-            throw new \Exception($response);
-        }
-        $response = json_decode($response, true);
-        if ('sendSMS' === $operation) {
-            $response['responseCode'] = $http_status;
-            $response['message'] = 'Success';
-        }
-
-        return $response;
     }
 }
