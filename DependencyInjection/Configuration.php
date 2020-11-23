@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('sms_service');
+        $treeBuilder = new TreeBuilder('sms_service');
+        $rootNode = $treeBuilder->getRootNode();
         $rootNode->children()
             ->scalarNode('provider')->isRequired()->end()
             ->booleanNode('test')->isRequired()->end()
