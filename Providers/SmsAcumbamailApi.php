@@ -109,11 +109,11 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     public function getHistory(\DateTime $start_date, \DateTime $end_date)
     {
-        // https://acumbamail.com/api/1/getSMSQuickSubscriberReport/?auth_token=<authToken>&start_date=2019/11/14 08:00&end_date=2019/11/14 10:00
+        // https://acumbamail.com/api/1/getSMSQuickSubscriberReport/?auth_token=<authToken>&start_date=2019-11-14 08:00&end_date=2019-11-14 10:00
         $operation = 'getSMSQuickSubscriberReport';
         $params = [
-            'start_date' => $start_date->format('Y/m/d H:i'),
-            'end_date' => $end_date->format('Y/m/d H:i'),
+            'start_date' => $start_date->format('Y-m-d H:i'),
+            'end_date' => $end_date->format('Y-m-d H:i'),
         ];
         $response = $this->send($operation, $params);
 
