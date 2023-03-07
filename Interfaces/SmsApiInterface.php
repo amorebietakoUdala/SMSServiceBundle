@@ -10,7 +10,7 @@ interface SmsApiInterface
     /**
      * Devuelve el credito disponible.
      *
-     * @return int : Número de créditos (mensajes) disponibles
+     * @return float : Número de créditos (mensajes) disponibles
      *
      * @throws \Exception
      */
@@ -25,5 +25,5 @@ interface SmsApiInterface
      *
      * @throws \Exception
      */
-    public function sendMessage(array $numbers, $message, $when = null);
+    public function sendMessage(array $numbers, $message, $when = null, $customId = null);
 }

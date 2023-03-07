@@ -3,25 +3,28 @@
 namespace AmorebietakoUdala\SMSServiceBundle\Providers;
 
 use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Exception;
 
 /**
- * Connection API to dinahosting.com.
+ * Connection API to smspubli.com.
  *
  * @version 1.0
  */
-class SmsAcumbamailApi implements SmsApiInterface
+class SmsPubliApi implements SmsApiInterface
 {
-    private const _ACUMBAMAIL_URL_SEND = 'https://acumbamail.com/';
+    # https://api.gateway360.com/api/3.0/account/get-balance
+    private const _SMSPUBLI_URL_SEND = 'https://api.gateway360.com/';
 
     /**
-     * @var : Acumbamail user token
+     * @var : SmsPubli user token
      */
-    private $authToken;
+    private $apiKey;
 
     /**
-     * @var : Acumbamail API version
+     * @var : SmsPubli API version
      */
-    private $version;
+    private string $version;
 
     /**
      * @var boolean: To Simulate the API response without making it set it to true
@@ -40,18 +43,47 @@ class SmsAcumbamailApi implements SmsApiInterface
     private $timeout;
 
     /**
-     * @var string: Country code to add to the telephones when no starting with +
+     * @var string: Country code to add to the telephones without +
      */
     private $countryCode;
 
-    public function __construct($authToken = null, $test = false, $sender, $version = 1, $timeout = 10, $countryCode = '34')
+    /**
+     * @var string: Username of the Sub Account Name
+     */
+    private $subAccountName;
+
+    /**
+     * @var float: Unitary price per SMS to calculate balance
+     */
+    private $unitaryCost;
+
+    /**
+     * @var string: Confirmation endpoint for sent SMSs 
+     */
+    private $confirmationRouteName = null;
+
+    /**
+     * @var string: Domain URL without final '/'
+     */
+    private $domainUrl = null;
+
+    private UrlGeneratorInterface $router;
+
+    public function __construct($sender, $unitaryCost, 
+                                $subAccountName = null, $apiKey = null, $test = false, $version = 1, $timeout = 10, $countryCode = '34', 
+                                $confirmationRouteName = null, $domainUrl = null, UrlGeneratorInterface $router)
     {
-        $this->authToken = $authToken;
+        $this->apiKey = $apiKey;
         $this->test = $test;
         $this->version = $version;
         $this->timeout = $timeout;
         $this->sender = substr(str_replace(' ', '_', $sender), 0, 10);
         $this->countryCode = $countryCode;
+        $this->subAccountName = $subAccountName;
+        $this->unitaryCost = $unitaryCost;
+        $this->confirmationRouteName = $confirmationRouteName;
+        $this->domainUrl = $domainUrl;
+        $this->router = $router;
     }
 
     /**
@@ -63,14 +95,27 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     public function getCredit()
     {
-        $operation = 'getCreditsSMS';
-        $response = $this->send($operation);
+        $operation = 'account/get-balance';
+        $params = [];
+        if ($this->subAccountName !== null ) {
+            $params = [
+                'user_name' => $this->subAccountName,
+            ];
+        }
+        $response = $this->send($operation,$params);
+        // dd($response);
+        $balance = $response['result']['balance'];
+        $currency = $response['result']['currency'];
+        if ($currency === "EUR") {
+            $balance = round(floatVal($balance) / $this->unitaryCost);    
+        }
 
-        return $response['Creditos'];
+        return $balance;
     }
 
     /**
      * Send the message to the telephone numbers expecified.
+     * https://panel.smspubli.com/api/3.0/docs/sms/send
      *
      * @param array $numbers : Array with the recipients telephone numbers
      * @param $message : Message to be sent
@@ -80,24 +125,27 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     public function sendMessage(array $numbers, $message, $when = null, $customId = null)
     {
-        $operation = 'sendSMS';
-        $formatedTelephones = $this->__formatTelephones($numbers);
-        $messages = $this->__createMessages($formatedTelephones, $message);
-
-        $messagesJson = json_encode($messages);
-
+        if (count($numbers) > 1000) {
+            throw new \Exception("1000 SMS limit exceeded");
+        }
+        $operation = 'sms/send';
+        $formatedTelephones = $this->formatTelephones($numbers);
+        $messages = $this->createMessages($formatedTelephones, $message, $customId);
+        $messagesJson = $messages;
         $params = [
             'messages' => $messagesJson,
         ];
-
-        if (!$this->test) {
-            $response = $this->send($operation, $params);
-        } else {
-            $response = json_decode('{"messages": [{"status": 0, "credits": 1, "id": 2889449}]}', true);
-            $response['responseCode'] = '201';
-            $response['message'] = 'Success';
+        if ($this->test) {
+            $params['fake'] = 1;
         }
-
+        if ($this->confirmationRouteName !== null ) {
+            if ( $this->domainUrl === null ) {
+                $params['report_url'] = $this->router->generate($this->confirmationRouteName,[], UrlGeneratorInterface::ABSOLUTE_URL);
+            } else {
+                $params['report_url'] = $this->domainUrl . $this->router->generate($this->confirmationRouteName);
+            }
+        }
+        $response = $this->send($operation, $params);
         return $response;
     }
 
@@ -129,7 +177,7 @@ class SmsAcumbamailApi implements SmsApiInterface
      *
      * @throws Exception
      */
-    private function __formatTelephones(array $numbers)
+    private function formatTelephones(array $numbers)
     {
         $formatedTelephones = [];
         foreach ($numbers as $number) {
@@ -137,12 +185,11 @@ class SmsAcumbamailApi implements SmsApiInterface
                 throw new Exception('The are empty telephones');
             }
             if ('+' === substr($number, 0, 0)) {
-                $formatedTelephones[] = $number;
+                $formatedTelephones[] = substr($number, 1);
             } else {
-                $formatedTelephones[] = '+'.$this->countryCode.$number;
+                $formatedTelephones[] = $this->countryCode.$number;
             }
         }
-
         return $formatedTelephones;
     }
 
@@ -156,7 +203,7 @@ class SmsAcumbamailApi implements SmsApiInterface
      *
      * @throws Exception
      */
-    private function __createMessages($numbers, $message)
+    private function createMessages($numbers, $message, $customId)
     {
         $messages = [];
         foreach ($numbers as $number) {
@@ -164,9 +211,10 @@ class SmsAcumbamailApi implements SmsApiInterface
                 throw new Exception('The are empty telephones');
             }
             $messages[] = [
-                'recipient' => $number,
-                'body' => $message,
-                'sender' => $this->sender,
+                'from' => $this->sender,
+                'to' => $number,
+                'text' => $message,
+                'custom' => ''.$customId,
             ];
         }
 
@@ -184,16 +232,17 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     public function send($operation, $params = null)
     {
-        $params['auth_token'] = $this->authToken;
+        $params['api_key'] = $this->apiKey;
         $http_status = null;
-        $handle = curl_init(self::_ACUMBAMAIL_URL_SEND);
+        $handle = curl_init(self::_SMSPUBLI_URL_SEND);
+        $headers = array('Content-Type: application/json');          
         if (false === $handle) { // error starting curl
             throw new \Exception('0 - Couldn\'t start curl');
         } else {
             curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($handle, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
-            curl_setopt($handle, CURLOPT_URL, self::_ACUMBAMAIL_URL_SEND.'api/'.$this->version.'/'.$operation.'/');
+            curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($handle, CURLOPT_URL, self::_SMSPUBLI_URL_SEND.'api/'.$this->version.'/'.$operation);
 
             curl_setopt($handle, CURLOPT_TIMEOUT, 60);
             curl_setopt($handle, CURLOPT_CONNECTTIMEOUT,
@@ -207,17 +256,23 @@ class SmsAcumbamailApi implements SmsApiInterface
                         false); // set false if you get a "60 - SSL certificate problem" error
 
             curl_setopt($handle, CURLOPT_POST, true);
-            curl_setopt($handle, CURLOPT_POSTFIELDS, $params);
-
+            curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($params));
+            
             $response = curl_exec($handle);
 
             $http_status = curl_getinfo($handle, CURLINFO_HTTP_CODE);
             if (201 != $http_status && 200 != $http_status) {
+                # Error Response example
+                # {"status":"error","error_id":"JSON_PARSE_ERROR","error_msg":"Your JSON was formatted incorrectly."}
+                # {"status":"error","error_id":"BAD_PARAMS","error_msg":"Parameter `messages` must be an array."}
+                # { "status": "ok", "result": [{ "status": "ok", "sms_id": "b7807936645e499caca19f065f65fd63", "custom": "" }] }
                 throw new \Exception(curl_errno($handle).' - '.curl_error($handle).'Response:'.$response);
             } else {
+                # {"status": "ok","result": {"balance": "0.6000", "currency": "EUR"}}
+                # 
                 $response = json_decode($response, true);
-                if ('sendSMS' === $operation) {
-                    $response['responseCode'] = $http_status;
+                $response['responseCode'] = $http_status;
+                if ($response['status'] === 'ok') {
                     $response['message'] = 'Success';
                 }
 

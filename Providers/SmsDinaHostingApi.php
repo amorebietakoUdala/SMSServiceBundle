@@ -54,7 +54,7 @@ class SmsDinaHostingApi implements SmsApiInterface
     /**
      * Returns the credit avaible.
      *
-     * @return int : Number of available credits (messages)
+     * @return float : Number of available credits (messages)
      *
      * @throws \Exception
      */
@@ -71,11 +71,11 @@ class SmsDinaHostingApi implements SmsApiInterface
      *
      * @param array $numbers : Array with the recipients telephone numbers
      * @param $message : Message to be sent
-     * @param string $when : The date when the message has to be sended
+     * @param \DateTime $when : The date when the message has to be sended
      *
      * @throws \Exception
      */
-    public function sendMessage(array $numbers, $message, $when = null)
+    public function sendMessage(array $numbers, $message, $when = null, $customId = null)
     {
         $params = [
             'account' => $this->account,

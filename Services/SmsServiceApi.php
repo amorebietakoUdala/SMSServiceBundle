@@ -11,6 +11,7 @@ namespace AmorebietakoUdala\SMSServiceBundle\Services;
 use AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi;
 use AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi;
 use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
+use AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi;
 
 /**
  * Description of SmsServiceApi.
@@ -23,7 +24,7 @@ class SmsServiceApi implements SmsApiInterface
 
     private $smsService = null;
 
-    public function __construct($provider, SmsDinaHostingApi $smsDinaHostingApi, SmsAcumbamailApi $smsAcumbamailApi)
+    public function __construct($provider, SmsDinaHostingApi $smsDinaHostingApi, SmsAcumbamailApi $smsAcumbamailApi, SmsPubliApi $smsPubliApi )
     {
         switch ($provider) {
             case 'Acumbamail':
@@ -32,13 +33,16 @@ class SmsServiceApi implements SmsApiInterface
             case 'Dinahosting':
                 $this->smsService = $smsDinaHostingApi;
                 break;
-        }
+            case 'Smspubli':
+                $this->smsService = $smsPubliApi;
+                break;
+            }
         $this->provider = $provider;
 
         return $this->smsService;
     }
 
-    public function getCredit(): int
+    public function getCredit(): float
     {
         return $this->smsService->getCredit();
     }
@@ -56,8 +60,8 @@ class SmsServiceApi implements SmsApiInterface
         return $this->smsService->getHistory($start_date, $end_date);
     }
 
-    public function sendMessage(array $numbers, $message, $when = null)
+    public function sendMessage(array $numbers, $message, $when = null, $customId = null)
     {
-        return $this->smsService->sendMessage($numbers, $message, $when);
+        return $this->smsService->sendMessage($numbers, $message, $when, $customId);
     }
 }

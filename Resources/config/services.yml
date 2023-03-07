@@ -8,22 +8,35 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
+    # _instanceof:
+    #     AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface:
+    #         tags: ['amreu.sms_api']
+
     AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi
         public: true
         autowire: true
         arguments: ['%username%','%password%','%account%','%test%','%sender%']
+        tags: ['amreu.sms_api']
         
     AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi
         public: true
         autowire: true
         arguments: ['%authToken%', '%test%', '%sender%','%version%', '%timeout%', '%countryCode%']
+        tags: ['amreu.sms_api']
+
+    AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi:
+        class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi
+        public: true
+        autowire: true
+        arguments: ['%sender%', '%unitaryCost%', '%subAccountName%', '%api_key%', '%test%', '%version%', '%timeout%', '%countryCode%', '%confirmationRouteName%', '%domainUrl%', '@router.default']
+        tags: ['amreu.sms_api']
 
     AmorebietakoUdala\SMSServiceBundle\Services\SmsServiceApi:
         public: true
         autowire: true
-        arguments: ['%provider%','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi']
+        arguments: ['%provider%','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi', '@AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi']
 
     AmorebietakoUdala\SMSServiceBundle\Controller\DefaultController:
         tags: ['controller.service_arguments']
