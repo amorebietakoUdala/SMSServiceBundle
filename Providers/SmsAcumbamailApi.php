@@ -3,6 +3,7 @@
 namespace AmorebietakoUdala\SMSServiceBundle\Providers;
 
 use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
+use \Exception;
 
 /**
  * Connection API to dinahosting.com.
@@ -44,7 +45,7 @@ class SmsAcumbamailApi implements SmsApiInterface
      */
     private $countryCode;
 
-    public function __construct($authToken = null, $test = false, $sender, $version = 1, $timeout = 10, $countryCode = '34')
+    public function __construct( $sender, $authToken = null, $test = false, $version = 1, $timeout = 10, $countryCode = '34')
     {
         $this->authToken = $authToken;
         $this->test = $test;
@@ -61,7 +62,7 @@ class SmsAcumbamailApi implements SmsApiInterface
      *
      * @throws \Exception
      */
-    public function getCredit()
+    public function getCredit(): float
     {
         $operation = 'getCreditsSMS';
         $response = $this->send($operation);

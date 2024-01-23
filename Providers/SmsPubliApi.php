@@ -69,9 +69,9 @@ class SmsPubliApi implements SmsApiInterface
 
     private UrlGeneratorInterface $router;
 
-    public function __construct($sender, $unitaryCost, 
+    public function __construct(UrlGeneratorInterface $router, $sender, $unitaryCost, 
                                 $subAccountName = null, $apiKey = null, $test = false, $version = 1, $timeout = 10, $countryCode = '34', 
-                                $confirmationRouteName = null, $domainUrl = null, UrlGeneratorInterface $router)
+                                $confirmationRouteName = null, $domainUrl = null)
     {
         $this->apiKey = $apiKey;
         $this->test = $test;
@@ -93,7 +93,7 @@ class SmsPubliApi implements SmsApiInterface
      *
      * @throws \Exception
      */
-    public function getCredit()
+    public function getCredit(): float
     {
         $operation = 'account/get-balance';
         $params = [];
@@ -103,7 +103,6 @@ class SmsPubliApi implements SmsApiInterface
             ];
         }
         $response = $this->send($operation,$params);
-        // dd($response);
         $balance = $response['result']['balance'];
         $currency = $response['result']['currency'];
         if ($currency === "EUR") {
