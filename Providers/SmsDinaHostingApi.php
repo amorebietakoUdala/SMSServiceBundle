@@ -58,7 +58,7 @@ class SmsDinaHostingApi implements SmsApiInterface
      *
      * @throws \Exception
      */
-    public function getCredit()
+    public function getCredit(): float
     {
         $params = ['account' => $this->account, 'command' => 'Sms_GetCredit'];
         $response = $this->send($params);

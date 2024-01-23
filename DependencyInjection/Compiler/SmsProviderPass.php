@@ -2,6 +2,7 @@
 
 namespace AmorebietakoUdala\SMSServiceBundle\DependencyInjection\Compiler;
 
+use AmorebietakoUdala\SMSServiceBundle\Services\SmsServiceApi;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;

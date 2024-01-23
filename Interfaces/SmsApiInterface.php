@@ -14,7 +14,7 @@ interface SmsApiInterface
      *
      * @throws \Exception
      */
-    public function getCredit();
+    public function getCredit(): float;
 
     /**
      * Envia un mensaje a un numero.

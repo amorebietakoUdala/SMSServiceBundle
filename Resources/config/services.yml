@@ -23,14 +23,14 @@ services:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi
         public: true
         autowire: true
-        arguments: ['%authToken%', '%test%', '%sender%','%version%', '%timeout%', '%countryCode%']
+        arguments: ['%sender%', '%authToken%', '%test%', '%version%', '%timeout%', '%countryCode%']
         tags: ['amreu.sms_api']
 
     AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi
         public: true
         autowire: true
-        arguments: ['%sender%', '%unitaryCost%', '%subAccountName%', '%api_key%', '%test%', '%version%', '%timeout%', '%countryCode%', '%confirmationRouteName%', '%domainUrl%', '@router.default']
+        arguments: ['@router.default', '%sender%', '%unitaryCost%', '%subAccountName%', '%api_key%', '%test%', '%version%', '%timeout%', '%countryCode%', '%confirmationRouteName%', '%domainUrl%']
         tags: ['amreu.sms_api']
 
     AmorebietakoUdala\SMSServiceBundle\Services\SmsServiceApi:

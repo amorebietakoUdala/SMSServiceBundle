@@ -15,7 +15,7 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('sms_service');
         $rootNode = $treeBuilder->getRootNode();
@@ -34,8 +34,8 @@ class Configuration implements ConfigurationInterface
                     ->end()
                     ->arrayNode('acumbamail')
                         ->children()
-                            ->scalarNode('authToken')->isRequired()->end()
                             ->scalarNode('sender')->isRequired()->end()
+                            ->scalarNode('authToken')->isRequired()->end()
                             ->scalarNode('version')->end()
                             ->scalarNode('timeout')->end()
                             ->scalarNode('countryCode')->end()
@@ -58,6 +58,7 @@ class Configuration implements ConfigurationInterface
             ->end()
         ->end()
         ;
+        //dd($treeBuilder);
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
