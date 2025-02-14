@@ -17,26 +17,32 @@ services:
         public: true
         autowire: true
         arguments: ['%username%','%password%','%account%','%test%','%sender%']
-        tags: ['amreu.sms_api']
+        tags: ['amreu.sms_provider']
         
     AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi
         public: true
         autowire: true
         arguments: ['%sender%', '%authToken%', '%test%', '%version%', '%timeout%', '%countryCode%']
-        tags: ['amreu.sms_api']
+        tags: ['amreu.sms_provider']
 
     AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi:
         class: AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi
         public: true
         autowire: true
         arguments: ['@router.default', '%sender%', '%unitaryCost%', '%subAccountName%', '%api_key%', '%test%', '%version%', '%timeout%', '%countryCode%', '%confirmationRouteName%', '%domainUrl%']
-        tags: ['amreu.sms_api']
+        tags: ['amreu.sms_provider']
+
+    AmorebietakoUdala\SMSServiceBundle\Providers\SmsSarenetApi:
+        public: true
+        autowire: true
+        arguments: ['%sender%','%clave%','%auth_token%']
+        tags: ['amreu.sms_provider']
 
     AmorebietakoUdala\SMSServiceBundle\Services\SmsServiceApi:
         public: true
         autowire: true
-        arguments: ['%provider%','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi', '@AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi']
+        arguments: ['%provider%','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi','@AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi', '@AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi' , '@AmorebietakoUdala\SMSServiceBundle\Providers\SarenetApi']
 
     AmorebietakoUdala\SMSServiceBundle\Controller\DefaultController:
         tags: ['controller.service_arguments']

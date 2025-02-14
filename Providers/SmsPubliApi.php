@@ -86,6 +86,11 @@ class SmsPubliApi implements SmsApiInterface
         $this->router = $router;
     }
 
+    public function getSender(): string
+    {
+        return $this->sender;
+    }
+
     /**
      * Returns the credit avaible.
      *

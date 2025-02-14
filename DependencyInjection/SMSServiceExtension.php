@@ -50,11 +50,17 @@ class SMSServiceExtension extends Extension
         $smsPubliDefinition->setArgument(8, $config['providers']['smspubli']['countryCode']);
         $smsPubliDefinition->setArgument(9, $config['providers']['smspubli']['confirmationRouteName']);
         $smsPubliDefinition->setArgument(10, $config['providers']['smspubli']['domainUrl']);
+        $sarenetDefinition = $container->getDefinition('AmorebietakoUdala\SMSServiceBundle\Providers\SmsSarenetApi');
+        $sarenetDefinition->setArgument(0, $config['providers']['sarenet']['sender']);
+        $sarenetDefinition->setArgument(1, $config['providers']['sarenet']['clave']);
+        $sarenetDefinition->setArgument(2, $config['providers']['sarenet']['authToken']);
+        $sarenetDefinition->setArgument(3, $config['test']);
         $smsServiceDefinition = $container->getDefinition('AmorebietakoUdala\SMSServiceBundle\Services\SmsServiceApi');
         $smsServiceDefinition->setArgument(0, $config['provider']);
         $smsServiceDefinition->setArgument(1, $dinaHostingDefinition);
         $smsServiceDefinition->setArgument(2, $acumbamailDefinition);
         $smsServiceDefinition->setArgument(3, $smsPubliDefinition);
+        $smsServiceDefinition->setArgument(4, $sarenetDefinition);
         //dd($config);
     }
 }
