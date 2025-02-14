@@ -14,45 +14,50 @@ class SmsAcumbamailApi implements SmsApiInterface
 {
     private const _ACUMBAMAIL_URL_SEND = 'https://acumbamail.com/';
 
-    /**
-     * @var : Acumbamail user token
-     */
-    private $authToken;
+    // /**
+    //  * @var : Acumbamail user token
+    //  */
+    // private $authToken;
 
-    /**
-     * @var : Acumbamail API version
-     */
-    private $version;
+    // /**
+    //  * @var : Acumbamail API version
+    //  */
+    // private $version;
 
-    /**
-     * @var boolean: To Simulate the API response without making it set it to true
-     */
-    private $test;
+    // /**
+    //  * @var boolean: To Simulate the API response without making it set it to true
+    //  */
+    // private $test;
 
-    /**
-     * @var string: Text especifying the sender of SMS. Can't have spaces.
-     *              Only 11 characters maximum.
-     */
-    private $sender;
+    // /**
+    //  * @var string: Text especifying the sender of SMS. Can't have spaces.
+    //  *              Only 11 characters maximum.
+    //  */
+    // private $sender;
 
-    /**
-     * @var int: Maximum time in seconds that you allow the connection phase
-     */
-    private $timeout;
+    // /**
+    //  * @var int: Maximum time in seconds that you allow the connection phase
+    //  */
+    // private $timeout;
 
-    /**
-     * @var string: Country code to add to the telephones when no starting with +
-     */
-    private $countryCode;
+    // /**
+    //  * @var string: Country code to add to the telephones when no starting with +
+    //  */
+    // private $countryCode;
 
-    public function __construct( $sender, $authToken = null, $test = false, $version = 1, $timeout = 10, $countryCode = '34')
+    public function __construct( private $sender, private readonly string $authToken = '', private readonly bool $test = false, private readonly int $version = 1, private readonly int $timeout = 10, private readonly string $countryCode = '34')
     {
-        $this->authToken = $authToken;
-        $this->test = $test;
-        $this->version = $version;
-        $this->timeout = $timeout;
+        // $this->authToken = $authToken;
+        // $this->test = $test;
+        // $this->version = $version;
+        // $this->timeout = $timeout;
         $this->sender = substr(str_replace(' ', '_', $sender), 0, 10);
-        $this->countryCode = $countryCode;
+        // $this->countryCode = $countryCode;
+    }
+
+    public function getSender(): string
+    {
+        return $this->sender;
     }
 
     /**

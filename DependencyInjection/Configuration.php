@@ -54,11 +54,19 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('domainUrl')->end()
                         ->end()
                     ->end()
+                    ->arrayNode('sarenet')
+                        ->children()
+                            ->scalarNode('sender')->isRequired()->end()
+                            ->scalarNode('clave')->end()
+                            ->scalarNode('authToken')->isRequired()->end()
+                            ->scalarNode('timeout')->defaultValue(60)->end()
+                        ->end()
+                    ->end()
                 ->end()
             ->end()
         ->end()
         ;
-        //dd($treeBuilder);
+        
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.

@@ -26,4 +26,9 @@ interface SmsApiInterface
      * @throws \Exception
      */
     public function sendMessage(array $numbers, $message, $when = null, $customId = null);
+
+     /**
+     * Devuelve el sender configurado para el proveedor.
+     */
+    public function getSender(): string;
 }

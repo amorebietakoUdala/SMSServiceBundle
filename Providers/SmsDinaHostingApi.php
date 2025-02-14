@@ -50,6 +50,11 @@ class SmsDinaHostingApi implements SmsApiInterface
             $this->sender = $this->account;
         }
     }
+    
+    public function getSender(): string
+    {
+        return $this->sender;
+    }
 
     /**
      * Returns the credit avaible.
