@@ -8,10 +8,11 @@
 
 namespace AmorebietakoUdala\SMSServiceBundle\Services;
 
+use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
 use AmorebietakoUdala\SMSServiceBundle\Providers\SmsDinaHostingApi;
 use AmorebietakoUdala\SMSServiceBundle\Providers\SmsAcumbamailApi;
-use AmorebietakoUdala\SMSServiceBundle\Interfaces\SmsApiInterface;
 use AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi;
+use AmorebietakoUdala\SMSServiceBundle\Providers\SmsSarenetApi;
 
 /**
  * Description of SmsServiceApi.
@@ -20,11 +21,11 @@ use AmorebietakoUdala\SMSServiceBundle\Providers\SmsPubliApi;
  */
 class SmsServiceApi implements SmsApiInterface
 {
-    private $provider = null;
+    private string $provider = '';
 
     private $smsService = null;
 
-    public function __construct($provider, SmsDinaHostingApi $smsDinaHostingApi, SmsAcumbamailApi $smsAcumbamailApi, SmsPubliApi $smsPubliApi )
+    public function __construct($provider, SmsDinaHostingApi $smsDinaHostingApi, SmsAcumbamailApi $smsAcumbamailApi, SmsPubliApi $smsPubliApi, SmsSarenetApi $sarenetApi)
     {
         switch ($provider) {
             case 'Acumbamail':
@@ -36,14 +37,17 @@ class SmsServiceApi implements SmsApiInterface
             case 'Smspubli':
                 $this->smsService = $smsPubliApi;
                 break;
+            case 'Sarenet':
+                $this->smsService = $sarenetApi;
+                break;
             }
         $this->provider = $provider;
-
         return $this->smsService;
     }
 
     public function getCredit(): float
     {
+        //dump($this->smsService, $this->provider);
         return $this->smsService->getCredit();
     }
 
@@ -63,5 +67,15 @@ class SmsServiceApi implements SmsApiInterface
     public function sendMessage(array $numbers, $message, $when = null, $customId = null)
     {
         return $this->smsService->sendMessage($numbers, $message, $when, $customId);
+    }
+
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+
+    public function getSender(): string
+    {
+        return $this->smsService->getSender();
     }
 }

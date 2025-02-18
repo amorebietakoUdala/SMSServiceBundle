@@ -86,6 +86,11 @@ class SmsPubliApi implements SmsApiInterface
         $this->router = $router;
     }
 
+    public function getSender(): string
+    {
+        return $this->sender;
+    }
+
     /**
      * Returns the credit avaible.
      *
@@ -135,7 +140,11 @@ class SmsPubliApi implements SmsApiInterface
             'messages' => $messagesJson,
         ];
         if ($this->test) {
+            // If this parameter is sent, SMSPubli responses normally but it's doesn't sent anything and it has no cost. Intended for testing an debugging.
             $params['fake'] = 1;
+            // Succesfull Response example
+            // {"status":"ok","result":[{"status":"ok","sms_id":"a599b0d11d084903a5fefbf5dbdf43f9","custom":"1739865151174"}],"responseCode":200,"message":"Success"}
+            // return json_decode('{"status":"ok","result":[{"status":"ok","sms_id":"a599b0d11d084903a5fefbf5dbdf43f9","custom":"1739865151174"}],"responseCode":200,"message":"Success"}', true);
         }
         if ($this->confirmationRouteName !== null ) {
             if ( $this->domainUrl === null ) {
