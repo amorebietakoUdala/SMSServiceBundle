@@ -99,7 +99,9 @@ class SmsSarenetApi implements SmsApiInterface
                 $responses[] = array_merge($this->send($body), ['rctp_name_number' => $number]);
             } else {
                 // ResposeCode and success message don't come in real responses, it's just for testing purposes
-                $responses[] = json_decode('{"exito":"OK","id":"675e7a15-914d-08cc-f95c-xxxxxxxxxxxx","responseCode":200,"message":"Success"}', true);
+                $response = json_decode('{"exito":"OK","id":"675e7a15-914d-08cc-f95c-xxxxxxxxxxxx","responseCode":200,"message":"Success"}', true);
+                $response = array_merge($response, ['rctp_name_number' => $number]);
+                $responses[] = $response;
             }
         }
         //$responses['deliveryId'] = $customId;
