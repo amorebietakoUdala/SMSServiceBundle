@@ -78,4 +78,8 @@ class SmsServiceApi implements SmsApiInterface
     {
         return $this->smsService->getSender();
     }
+
+    public function getProviderService() {
+        return $this->smsService ? get_class($this->smsService) : null;
+    }
 }

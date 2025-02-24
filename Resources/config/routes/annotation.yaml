@@ -1,0 +1,3 @@
+sms_service_homepage:
+    resource: ../../../Controller
+    type: attribute

@@ -1,3 +1,0 @@
-sms_service_homepage:
-    path:     /
-    defaults: { _controller: SMSServiceBundle:Default:index }

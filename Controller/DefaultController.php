@@ -8,15 +8,15 @@ use AmorebietakoUdala\SMSServiceBundle\Services\SmsServiceApi;
 
 class DefaultController extends AbstractController
 {
-    /**
-     * @Route("/", name="sms_getCredit", methods={"GET"})
-     */
-    public function indexAction(SmsServiceApi $smsService)
+    #[Route('/credit', name: 'sms_getCredit', methods: ['GET'])]
+    public function index(SmsServiceApi $smsService)
     {
         $credit = $smsService->getCredit();
 
         return $this->render('@SMSService/default/index.html.twig', [
             'credit' => $credit,
+            'provider' => $smsService->getProvider(),
+            'providerService' => $smsService->getProviderService(),
         ]);
     }
 }
